@@ -1,18 +1,68 @@
-# Salesforce DX Project: Next Steps
+# Payment Callback API
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+Este projeto implementa um endpoint para receber callbacks de pagamentos, integrando sistemas de terceiros (ex: gateways de pagamento) com sua aplicação. O objetivo é processar notificações de eventos de pagamento e atualizar o status das transações no seu sistema.
 
-## How Do You Plan to Deploy Your Changes?
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## Visão Geral
 
-## Configure Your Salesforce DX Project
+A API de Payment Callback expõe um endpoint HTTP para receber notificações de pagamento. Ao receber um callback, a API processa os dados e responde ao sistema de origem, garantindo a integridade e rastreabilidade das operações.
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+## Funcionalidades
 
-## Read All About It
+- Receber notificações de pagamento via HTTP POST.
+- Validar e processar o payload recebido.
+- Atualizar o status da transação no sistema.
+- Retornar resposta adequada ao sistema de origem.
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+
+
+## Como Executar
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/payment-callback-api.git
+   cd payment-callback-api
+   ```
+2. Conecte-se à sua org Salesforce:
+
+Faça login na sua org (exemplo para uma org de desenvolvimento):
+
+```bash
+sfdx force:auth:web:login -a minha-org
+```
+
+3. Faça o deploy do código para sua org Salesforce:
+
+```bash
+sfdx force:source:deploy -p force-app -u minha-org
+```
+4. Acesse o endpoint:
+
+O endpoint estará disponível em:
+
+```bash
+https://<sua-instance>.my.salesforce.com/services/apexrest/api/payment-callback
+```
+Substitua <sua-instance> pelo domínio da sua org Salesforce.
+
+5. Exemplo de chamada (usando cURL):
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer <seu-access-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"operationId":"1234567890","status":"CONFIRMED","amount":100.00,"paymentMethod":"CREDIT_CARD"}' \
+  https://<sua-instance>.my.salesforce.com/services/apexrest/api/payment-callback
+  ```
+Substitua <seu-access-token> pelo token de acesso OAuth válido.
+
+
+## Exemplo de Payload
+
+```json
+{
+  "operationId": "1234567890",
+  "status": "CONFIRMED",
+  "amount": 100.00,
+  "paymentMethod": "CREDIT_CARD"
+}
